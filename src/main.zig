@@ -10,7 +10,7 @@ const Allocator = mem.Allocator;
 
 const apiURL = "https://api.openweathermap.org/data/2.5/weather/?lat={s}&lon={s}&appid={s}";
 
-const Forcast = struct {
+const Response = struct {
     name: []const u8,
     weather: []struct {
         id: i64,
@@ -31,13 +31,13 @@ pub fn main() !void {
     defer arena.deinit();
 
     const allocator = arena.allocator();
+
     const stdout = std.io.getStdOut().writer();
 
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
     if (args.len != 3) {
         std.debug.print("Program takes exactly 2 arguments (longitude and latitude). {} given\n", .{args[1..].len});
-
         return;
     }
 
@@ -61,15 +61,15 @@ pub fn main() !void {
 
     const options = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
-    const forecast = try std.json.parseFromSlice(Forcast, allocator, response_buffer.items, options);
-    defer forecast.deinit();
+    const response = try std.json.parseFromSlice(Response, allocator, response_buffer.items, options);
+    defer response.deinit();
 
-    if (forecast.value.weather.len == 0) {
+    if (response.value.weather.len == 0) {
         try stdout.print("{{\"text\":\"no weather data\"}}\n", .{});
         return;
     }
 
-    var temp = forecast.value.main.temp - 273.15;
+    var temp = response.value.main.temp - 273.15;
 
     var tempPrefix = "+";
     if (temp < 0) {
@@ -77,18 +77,18 @@ pub fn main() !void {
         tempPrefix = "-";
     }
 
-    const icon = getIcon(forecast.value.weather[0].id);
+    const icon = getIcon(response.value.weather[0].id);
 
     try stdout.print("{{\"text\":\"{s} {s}{d:2.1}°C\", \"tooltip\":\"{s}: {s} {s} 🌡️{s}{d:2.1}°C  🌬️ {d:2.1}m/s\"}}\n", .{
         icon,
         tempPrefix,
         temp,
-        forecast.value.name,
+        response.value.name,
         icon,
-        forecast.value.weather[0].description,
+        response.value.weather[0].description,
         tempPrefix,
         temp,
-        forecast.value.wind.speed,
+        response.value.wind.speed,
     });
 }
 
