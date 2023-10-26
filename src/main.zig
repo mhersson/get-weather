@@ -44,7 +44,7 @@ pub fn main() !void {
     const latitude = args[1];
     const longitude = args[2];
 
-    const api_key = os.getenv("OPEN_WEATHER_API_KEY") orelse {
+    const api_key = os.getenv("OPEN_WEATHER_MAP_API_KEY") orelse {
         try stdout.print("{{\"text\":\"missing key\"}}\n", .{});
         return;
     };
@@ -64,16 +64,46 @@ pub fn main() !void {
     const forecast = try std.json.parseFromSlice(Forcast, allocator, response_buffer.items, options);
     defer forecast.deinit();
 
-    const temp = forecast.value.main.temp - 273.15;
+    if (forecast.value.weather.len == 0) {
+        try stdout.print("{{\"text\":\"no weather data\"}}\n", .{});
+        return;
+    }
 
-    // {"text":"☀️ +10°C", "tooltip":"Oslo, Norway: ☀️ 🌡️+10°C 🌬️↖15km/h"}
-    try stdout.print("{{\"text\":\"{d:2.1}°C\", \"tooltip\":\"{s}, {s} 🌡️{d:2.1}°C 🌬️{d:2.1}m/s\"}}", .{
+    var temp = forecast.value.main.temp - 273.15;
+
+    var tempPrefix = "+";
+    if (temp < 0) {
+        temp *= -1;
+        tempPrefix = "-";
+    }
+
+    const icon = getIcon(forecast.value.weather[0].id);
+
+    try stdout.print("{{\"text\":\"{s} {s}{d:2.1}°C\", \"tooltip\":\"{s}, {s} {s}🌡️{s}{d:2.1}°C  🌬️ {d:2.1}m/s\"}}\n", .{
+        icon,
+        tempPrefix,
         temp,
         forecast.value.name,
         forecast.value.weather[0].description,
+        icon,
+        tempPrefix,
         temp,
         forecast.value.wind.speed,
     });
+}
+
+fn getIcon(id: i64) []const u8 {
+    switch (id) {
+        200...299 => return "🌩",
+        300...399, 501...599 => return "☔",
+        500 => return "🌦",
+        600...699 => return "⛄",
+        700...799 => return "🌫",
+        800 => return "🌞",
+        801 => return "⛅",
+        802...804 => return "☁",
+        else => return "",
+    }
 }
 
 fn curlRequest(allocator: Allocator, api: []const u8) !std.ArrayList(u8) {
