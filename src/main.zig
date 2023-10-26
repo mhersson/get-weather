@@ -79,13 +79,13 @@ pub fn main() !void {
 
     const icon = getIcon(forecast.value.weather[0].id);
 
-    try stdout.print("{{\"text\":\"{s} {s}{d:2.1}°C\", \"tooltip\":\"{s}, {s} {s}🌡️{s}{d:2.1}°C  🌬️ {d:2.1}m/s\"}}\n", .{
+    try stdout.print("{{\"text\":\"{s} {s}{d:2.1}°C\", \"tooltip\":\"{s}: {s} {s} 🌡️{s}{d:2.1}°C  🌬️ {d:2.1}m/s\"}}\n", .{
         icon,
         tempPrefix,
         temp,
         forecast.value.name,
-        forecast.value.weather[0].description,
         icon,
+        forecast.value.weather[0].description,
         tempPrefix,
         temp,
         forecast.value.wind.speed,
