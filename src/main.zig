@@ -10,6 +10,22 @@ const Allocator = mem.Allocator;
 
 const apiURL = "https://api.openweathermap.org/data/2.5/weather/?lat={s}&lon={s}&appid={s}";
 
+const Forcast = struct {
+    name: []const u8,
+    weather: []struct {
+        id: i64,
+        main: []const u8,
+        description: []const u8,
+        icon: []const u8,
+    },
+    main: struct {
+        temp: f32,
+    },
+    wind: struct {
+        speed: f32,
+    },
+};
+
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer arena.deinit();
@@ -27,9 +43,7 @@ pub fn main() !void {
     const latitude = args[1];
     const longitude = args[2];
 
-    const api_key = os.getenv("OPEN_WEATHER_API_KEY") orelse {
-        return error.APIKeyNotFound;
-    };
+    const api_key = os.getenv("OPEN_WEATHER_API_KEY") orelse return error.APIKeyNotFound;
 
     const api = try std.fmt.allocPrint(allocator, apiURL, .{ latitude, longitude, api_key });
 
@@ -38,8 +52,22 @@ pub fn main() !void {
 
     response_buffer = try curlRequest(allocator, api);
 
-    // std.log.info("Got response of {d} bytes", .{response_buffer.items.len});
-    std.debug.print("{s}\n", .{response_buffer.items});
+    const options = std.json.ParseOptions{ .ignore_unknown_fields = true };
+
+    const forecast = try std.json.parseFromSlice(Forcast, allocator, response_buffer.items, options);
+    defer forecast.deinit();
+
+    const temp = forecast.value.main.temp - 273.15;
+
+    const stdout = std.io.getStdOut().writer();
+    // {"text":"☀️ +10°C", "tooltip":"Oslo, Norway: ☀️ 🌡️+10°C 🌬️↖15km/h"}
+    try stdout.print("{{\"text\":\"{d:2.1}°C\", \"tooltip\":\"{s}, {s} 🌡️{d:2.1}°C 🌬️{d:2.1}m/s\"}}", .{
+        temp,
+        forecast.value.name,
+        forecast.value.weather[0].description,
+        temp,
+        forecast.value.wind.speed,
+    });
 }
 
 fn curlRequest(allocator: Allocator, api: []const u8) !std.ArrayList(u8) {
