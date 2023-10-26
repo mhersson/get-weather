@@ -31,6 +31,7 @@ pub fn main() !void {
     defer arena.deinit();
 
     const allocator = arena.allocator();
+    const stdout = std.io.getStdOut().writer();
 
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
@@ -43,14 +44,20 @@ pub fn main() !void {
     const latitude = args[1];
     const longitude = args[2];
 
-    const api_key = os.getenv("OPEN_WEATHER_API_KEY") orelse return error.APIKeyNotFound;
+    const api_key = os.getenv("OPEN_WEATHER_API_KEY") orelse {
+        try stdout.print("{{\"text\":\"missing key\"}}\n", .{});
+        return;
+    };
 
     const api = try std.fmt.allocPrint(allocator, apiURL, .{ latitude, longitude, api_key });
 
     var response_buffer = std.ArrayList(u8).init(allocator);
     defer response_buffer.deinit();
 
-    response_buffer = try curlRequest(allocator, api);
+    response_buffer = curlRequest(allocator, api) catch {
+        try stdout.print("{{\"text\":\"error\"}}\n", .{});
+        return;
+    };
 
     const options = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
@@ -59,7 +66,6 @@ pub fn main() !void {
 
     const temp = forecast.value.main.temp - 273.15;
 
-    const stdout = std.io.getStdOut().writer();
     // {"text":"☀️ +10°C", "tooltip":"Oslo, Norway: ☀️ 🌡️+10°C 🌬️↖15km/h"}
     try stdout.print("{{\"text\":\"{d:2.1}°C\", \"tooltip\":\"{s}, {s} 🌡️{d:2.1}°C 🌬️{d:2.1}m/s\"}}", .{
         temp,
