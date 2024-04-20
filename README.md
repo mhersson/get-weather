@@ -1,5 +1,7 @@
 # README: get-weather 🌞
 
+![Build status](https://github.com/mhersson/get-weather/actions/workflows/build-zig-11.yaml/badge.svg)
+
 get-weather is a small program written in the [Zig](https://ziglang.org)
 programming language intended to be used as a custom
 [Waybar](https://github.com/Alexays/Waybar) module. It requires you to have a
@@ -30,15 +32,13 @@ $ ~/.config/waybar/get-weather 40.73 -73.93
 
 ## Install instructions
 
-You need to have Zig installed - I used `0.12.0-dev.1270+6c9d34bce` when
-writing this, so at least as new as that. Take a look at the [Zig download
-page](https://ziglang.org/download/) for instructions. Then just clone this
-repository, and run `zig build`. (If the size of the executable matters to you;
-e.g if you plan on adding it to a dotfiles repository together with you Waybar
-config, you can run `zig build -Doptimize=ReleaseSmall`, and the size of the
-executable will be only ~150K.) Copy the `get-weather` executable from
-`zig-out/bin/get-weather` to e.g your waybar config folder like in the example
-above, and you're all set.
+Take a look at the [Zig download page](https://ziglang.org/download/) for
+instructions. Then just clone this repository, and run `zig build`. (If the
+size of the executable matters to you; e.g if you plan on adding it to a
+dotfiles repository together with you Waybar config, you can run `zig build
+-Doptimize=ReleaseSmall`, and the size of the executable will be only ~150K.)
+Copy the `get-weather` executable from `zig-out/bin/get-weather` to e.g your
+waybar config folder like in the example above, and you're all set.
 
 ## Why Zig
 
