@@ -30,7 +30,7 @@ $ ~/.config/waybar/get-weather 40.73 -73.93
 {"text":"🌞 +13.7°C", "tooltip":"Long Island City: 🌞 clear sky 🌡️+13.7°C  🌬️ 2.6m/s"}
 ```
 
-## Install instructions
+## Build instructions
 
 Take a look at the [Zig download page](https://ziglang.org/download/) for
 instructions. Then just clone this repository, and run `zig build`. (If the
