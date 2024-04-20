@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: Install curl
@@ -19,8 +21,8 @@ jobs:
       run: zig version
     - name: Build
       run: zig build
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload files to a GitHub release
+      uses: svenstaro/upload-release-action@2.9.0
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: zig-out/bin/get-weather
