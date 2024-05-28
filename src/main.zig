@@ -1,5 +1,5 @@
 const std = @import("std");
-const os = @import("std").os;
+const posix = @import("std").posix;
 const http = @import("std").http;
 const mem = @import("std").mem;
 const cURL = @cImport({
@@ -44,7 +44,7 @@ pub fn main() !void {
     const latitude = args[1];
     const longitude = args[2];
 
-    const api_key = os.getenv("OPEN_WEATHER_MAP_API_KEY") orelse {
+    const api_key = posix.getenv("OPEN_WEATHER_MAP_API_KEY") orelse {
         try stdout.print("{{\"text\":\"missing key\"}}\n", .{});
         return;
     };
