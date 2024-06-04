@@ -1,6 +1,6 @@
 # README: get-weather 🌞
 
-![Build status](https://github.com/mhersson/get-weather/actions/workflows/build-zig-11.yaml/badge.svg)
+![Build status](https://github.com/mhersson/get-weather/actions/workflows/build-zig-12.yaml/badge.svg)
 
 get-weather is a small program written in the [Zig](https://ziglang.org)
 programming language intended to be used as a custom
@@ -12,7 +12,7 @@ latitude and longitude.
 
 Example Waybar config for get-weather
 
-``` json
+```json
 
   "custom/weather": {
     "exec": "$XDG_CONFIG_HOME/waybar/get-weather 40.73 -73.93",
@@ -25,7 +25,7 @@ Example Waybar config for get-weather
 
 You can test get-weather by running it in a terminal:
 
-``` sh
+```sh
 $ ~/.config/waybar/get-weather 40.73 -73.93
 {"text":"🌞 +13.7°C", "tooltip":"Long Island City: 🌞 clear sky 🌡️+13.7°C  🌬️ 2.6m/s"}
 ```
