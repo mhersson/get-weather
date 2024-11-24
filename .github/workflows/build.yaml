@@ -1,4 +1,4 @@
-name: Works with Zig 0.12.0
+name: Works with Zig 0.13.0
 on:
   push:
     branches:
@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install curl
-      run: sudo apt-get install -y libcurl4-openssl-dev
+      run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
     - uses: actions/checkout@v2
     - uses: goto-bus-stop/setup-zig@v2
       with:
-        version: 0.12.0
+        version: 0.13.0
     - name: Check zig version
       run: zig version
     - name: Build

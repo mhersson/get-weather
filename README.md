@@ -1,6 +1,6 @@
 # README: get-weather 🌞
 
-![Build status](https://github.com/mhersson/get-weather/actions/workflows/build-zig-12.yaml/badge.svg)
+![Build status](https://github.com/mhersson/get-weather/actions/workflows/build.yaml/badge.svg)
 
 get-weather is a small program written in the [Zig](https://ziglang.org)
 programming language intended to be used as a custom
